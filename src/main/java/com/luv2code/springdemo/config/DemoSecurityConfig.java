@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -18,13 +20,12 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         // add our users for in memory authentication
-
-        UserBuilder users = User.withDefaultPasswordEncoder();
-
         auth.inMemoryAuthentication()
-                .withUser(users.username("john").password("test123").roles("EMPLOYEE"))
-                .withUser(users.username("mary").password("test123").roles("EMPLOYEE", "MANAGER"))
-                .withUser(users.username("susan").password("test123").roles("EMPLOYEE", "ADMIN"));
+                .withUser("john").password("{noop}test123").roles("EMPLOYEE")
+                .and()
+                .withUser("mary").password("{noop}test123").roles("EMPLOYEE", "MANAGER")
+                .and()
+                .withUser("susan").password("{noop}test123").roles("EMPLOYEE", "ADMIN");
     }
 
     @Override
@@ -63,6 +64,10 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
         // For more details, see this link
         // http://www.baeldung.com/spring-security-session
 
+    }
+
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
